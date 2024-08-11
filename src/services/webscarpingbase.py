@@ -12,9 +12,8 @@ class WebScrapingBase:
         self.navegador = webdriver.Chrome(service=self.__servico)
         self.navegador.maximize_window()
 
-    @abstractmethod
     def abrir_navegador(self, url: str) -> WebDriver:
-        pass
+        self.navegador.get(url)
 
     @abstractmethod
     def fazer_pesquisa_produto(self, termo_busca: str) -> None:
@@ -30,4 +29,8 @@ class WebScrapingBase:
 
     @abstractmethod
     def coletar_dados_produtos(self):
+        pass
+
+    @abstractmethod
+    def executar_paginacao(self) -> bool:
         pass
