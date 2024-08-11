@@ -99,7 +99,7 @@ class WebScrapingLeroyMerling(WebScrapingBase):
         Args:
             chave (int): número do loop
         """
-        self.navegador.execute_script(f'window.scroll(0, {chave * 80})')
+        self.navegador.execute_script(f'window.scroll(0, {chave * 90})')
 
     def coletar_dados_produtos(self) -> Generator[Tuple[str, str, str, str, str], None, None]:
         """Método para retornar os dados de cada produto por vez
@@ -133,7 +133,7 @@ class WebScrapingLeroyMerling(WebScrapingBase):
                     By.TAG_NAME,
                     'a'
                 ).get_attribute('href')
-                yield nome, codigo, preco, url_imagem, url_produto, self.__data_atual
+                yield nome, codigo, preco, url_imagem, url_produto, self.__data_extracao
                 self.__executar_rolagem(chave=chave)
         except NoSuchElementException as msg:
             logger.error(f'Não encontrou id: {msg} ')
