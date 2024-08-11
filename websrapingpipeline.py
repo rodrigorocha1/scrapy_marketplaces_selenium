@@ -9,7 +9,7 @@ class WebScrapingPipeline:
         self.__web_scraping_service = web_scraping_service
 
     def rodar_web_scraping(self):
-        logger.info('Iniciando web Scraping')
+
         paginacao = True
 
         self.__web_scraping_service.abrir_navegador(
@@ -33,5 +33,7 @@ class WebScrapingPipeline:
         self.__web_scraping_service.fechar_nagegador()
 
 
+logger.info('Iniciando web Scraping')
 ws = WebScrapingPipeline(web_scraping_service=WebScrapingLeroyMerling())
 ws.rodar_web_scraping()
+logger.info('Fim web Scraping')

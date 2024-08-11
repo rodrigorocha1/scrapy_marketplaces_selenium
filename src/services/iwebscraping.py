@@ -41,7 +41,7 @@ class IWebScraping(ABC):
         pass
 
     @abstractmethod
-    def coletar_dados_produtos(self) -> Generator[Tuple[str, str, str, str, str], None, None]:
+    def coletar_dados_produtos(self) -> Generator[Tuple[str, int, float, str, str], None, None]:
         """Método para retornar os dados de cada produto por vez
 
         Yields:

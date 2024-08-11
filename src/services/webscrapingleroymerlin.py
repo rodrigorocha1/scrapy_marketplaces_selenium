@@ -31,8 +31,8 @@ class WebScrapingLeroyMerling(WebScrapingBase):
         """
         data_atual = datetime.now()
         data_formatada = data_atual.strftime('%Y-%m-%d %H:%M:%S')
-        data_datetime = datetime.strptime(data_formatada, '%Y-%m-%d %H:%M:%S')
-        return data_datetime
+
+        return data_formatada
 
     def fazer_pesquisa_produto(self, termo_busca: str) -> None:
         """Método para abrir o navegador e conectar na url
@@ -101,7 +101,7 @@ class WebScrapingLeroyMerling(WebScrapingBase):
         """
         self.navegador.execute_script(f'window.scroll(0, {chave * 90})')
 
-    def coletar_dados_produtos(self) -> Generator[Tuple[str, str, str, str, str], None, None]:
+    def coletar_dados_produtos(self) -> Generator[Tuple[str, int, float, str, str], None, None]:
         """Método para retornar os dados de cada produto por vez
 
         Yields:
@@ -133,7 +133,7 @@ class WebScrapingLeroyMerling(WebScrapingBase):
                     By.TAG_NAME,
                     'a'
                 ).get_attribute('href')
-                yield nome, codigo, preco, url_imagem, url_produto, self.__data_extracao
+                yield nome, int(codigo.replace('Cód. ', '')), float(preco.replace('R$', '')), url_imagem, url_produto, self.__data_extracao
                 self.__executar_rolagem(chave=chave)
         except NoSuchElementException as msg:
             logger.error(f'Não encontrou id: {msg} ')
