@@ -6,12 +6,15 @@ from src.services.webscarpingbase import WebScrapingBase
 from src.pacote_log.config__log import logger
 from typing import (Generator, Tuple)
 from datetime import datetime
+from enums.enum_empresa import Empresa
 
 
 class WebScrapingLeroyMerling(WebScrapingBase):
 
     def __init__(self) -> None:
         self.__data_extracao = self.__data_atual()
+        self.__empresa = Empresa.LEROY_MERLIN
+
         super().__init__()
 
     def abrir_navegador(self, url: str):
@@ -113,27 +116,34 @@ class WebScrapingLeroyMerling(WebScrapingBase):
                 'new-product-thumb'
             )
             for chave, produto in enumerate(lista_produtos):
-                nome = produto.find_element(
-                    By.CLASS_NAME,
-                    'css-1eaoahv-ellipsis'
-                ).text
-                codigo = produto.find_element(
-                    By.CLASS_NAME,
-                    'css-19qfvzb-new-product-thumb__product-code'
-                ).text
-                preco = produto.find_element(
-                    By.CLASS_NAME,
-                    'css-m39r81-price-tag__price'
-                ).text
-                url_imagem = produto.find_element(
-                    By.CLASS_NAME,
-                    'css-1n5vdld-product-thumbnail__image'
-                ).get_attribute('src')
-                url_produto = produto.find_element(
-                    By.TAG_NAME,
-                    'a'
-                ).get_attribute('href')
-                yield nome, int(codigo.replace('Cód. ', '')), float(preco.replace('R$', '')), url_imagem, url_produto, self.__data_extracao
+
+                yield {
+                    'EMPRESA': self.__empresa.name,
+                    'CODIGO_EMPRESA':  self.__empresa.value,
+                    'NOME_PRODUTO': produto.find_element(
+                        By.CLASS_NAME,
+                        'css-1eaoahv-ellipsis'
+                    ).text,
+                    'CODIGO': int(produto.find_element(
+                        By.CLASS_NAME,
+                        'css-19qfvzb-new-product-thumb__product-code'
+                    ).text.replace('Cód. ', '')
+                    ),
+                    'PRECO': float(produto.find_element(
+                        By.CLASS_NAME,
+                        'css-m39r81-price-tag__price'
+                    ).text.replace('R$', '')),
+                    'URL_IMG':  produto.find_element(
+                        By.CLASS_NAME,
+                        'css-1n5vdld-product-thumbnail__image'
+                    ).get_attribute('src'),
+                    'URL_PRODUTO': produto.find_element(
+                        By.TAG_NAME,
+                        'a'
+                    ).get_attribute('href'),
+                    'DATA_EXTRACAO':  self.__data_extracao
+
+                }
                 self.__executar_rolagem(chave=chave)
         except NoSuchElementException as msg:
             logger.error(f'Não encontrou id: {msg} ')
