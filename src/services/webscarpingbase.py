@@ -15,6 +15,7 @@ class WebScrapingBase(IWebScraping):
         self.navegador = webdriver.Chrome(service=self.__servico)
         self.navegador.maximize_window()
 
+    @abstractmethod
     def abrir_navegador(self, url: str):
         """Método para abrir o navegador e conectar na url
 
@@ -22,7 +23,7 @@ class WebScrapingBase(IWebScraping):
             url (str): url do site
 
         """
-        self.navegador.get(url)
+        pass
 
     @abstractmethod
     def fazer_pesquisa_produto(self, termo_busca: str) -> None:
@@ -64,5 +65,10 @@ class WebScrapingBase(IWebScraping):
 
         Returns:
             bool: Verdadeiro caso a páginação seja feita com sucesso, falso caso contrário
+        """
+        pass
+
+    def fechar_nagegador(self):
+        """Método para fechar o navegador
         """
         pass

@@ -14,6 +14,15 @@ class WebScrapingLeroyMerling(WebScrapingBase):
         self.__data_extracao = self.__data_atual()
         super().__init__()
 
+    def abrir_navegador(self, url: str):
+        """Método para abrir o navegador e conectar na url
+
+        Args:
+            url (str): url do site
+
+        """
+        self.navegador.get(url)
+
     def __data_atual(self) -> datetime:
         """Método para obter a data atual
 
@@ -141,3 +150,6 @@ class WebScrapingLeroyMerling(WebScrapingBase):
             return True
         except:
             return False
+
+    def fechar_nagegador(self):
+        self.navegador.close()
