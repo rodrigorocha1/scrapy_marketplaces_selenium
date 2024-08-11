@@ -1,7 +1,9 @@
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from src.services.webscarpingbase import WebScrapingBase
+from src.pacote_log.config__log import logger
 from typing import (Generator, Tuple)
 from datetime import datetime
 
@@ -30,17 +32,26 @@ class WebScrapingLeroyMerling(WebScrapingBase):
             url (str): url do site
 
         """
-        busca_produto = self.navegador.find_element(
-            By.ID, '@autocomplete-quicksearch-input')
-        busca_produto.send_keys(termo_busca)
+        try:
+            busca_produto = self.navegador.find_element(
+                By.ID,
+                '@autocomplete-quicksearch-input'
+            )
+            busca_produto.send_keys(termo_busca)
+        except NoSuchElementException as msg:
+            logger.error(f'Não encontrou id: {msg} ')
 
     def __esperar_elemento(self):
         """Espera a tag do css antes de fazer as pesquisas
         """
         WebDriverWait(self.navegador, 20).until(
             EC.presence_of_element_located(
-                (By.CSS_SELECTOR,
-                 '#mobile-filter-content > div > div > div:nth-child(6) > div.flex-1.px-4.py-4 > div > div:nth-child(1) > div > input')))
+                (
+                    By.CSS_SELECTOR,
+                    '#mobile-filter-content > div > div > div:nth-child(6) > div.flex-1.px-4.py-4 > div > div:nth-child(1) > div > input'
+                )
+            )
+        )
 
     def clicar_botao_pesquisa(self) -> None:
         """Método para fazer a pesquisa
@@ -60,7 +71,8 @@ class WebScrapingLeroyMerling(WebScrapingBase):
         self.__esperar_elemento()
         preco_minimo = self.navegador.find_element(
             By.CSS_SELECTOR,
-            '#mobile-filter-content > div > div > div:nth-child(6) > div.flex-1.px-4.py-4 > div > div:nth-child(1) > div > input')
+            '#mobile-filter-content > div > div > div:nth-child(6) > div.flex-1.px-4.py-4 > div > div:nth-child(1) > div > input'
+        )
         preco_minimo.send_keys(preco_menor)
         preco_maximo = self.navegador.find_element(
             By.XPATH,
@@ -86,21 +98,36 @@ class WebScrapingLeroyMerling(WebScrapingBase):
         Yields:
             Generator[Tuple[str, str, str, str, str], None, None]: Um gerador de produtos
         """
-        lista_produtos = self.navegador.find_elements(
-            By.CLASS_NAME,  'new-product-thumb')
-        for chave, produto in enumerate(lista_produtos):
-            nome = produto.find_element(
-                By.CLASS_NAME, 'css-1eaoahv-ellipsis').text
-            codigo = produto.find_element(
-                By.CLASS_NAME, 'css-19qfvzb-new-product-thumb__product-code').text
-            preco = produto.find_element(
-                By.CLASS_NAME, 'css-m39r81-price-tag__price').text
-            url_imagem = produto.find_element(
-                By.CLASS_NAME, 'css-1n5vdld-product-thumbnail__image').get_attribute('src')
-            url_produto = produto.find_element(
-                By.TAG_NAME, 'a').get_attribute('href')
-            yield nome, codigo, preco, url_imagem, url_produto, self.__data_atual
-            self.__executar_rolagem(chave=chave)
+        try:
+            lista_produtos = self.navegador.find_elements(
+                By.CLASS_NAME,
+                'new-product-thumb'
+            )
+            for chave, produto in enumerate(lista_produtos):
+                nome = produto.find_element(
+                    By.CLASS_NAME,
+                    'css-1eaoahv-ellipsis'
+                ).text
+                codigo = produto.find_element(
+                    By.CLASS_NAME,
+                    'css-19qfvzb-new-product-thumb__product-code'
+                ).text
+                preco = produto.find_element(
+                    By.CLASS_NAME,
+                    'css-m39r81-price-tag__price'
+                ).text
+                url_imagem = produto.find_element(
+                    By.CLASS_NAME,
+                    'css-1n5vdld-product-thumbnail__image'
+                ).get_attribute('src')
+                url_produto = produto.find_element(
+                    By.TAG_NAME,
+                    'a'
+                ).get_attribute('href')
+                yield nome, codigo, preco, url_imagem, url_produto, self.__data_atual
+                self.__executar_rolagem(chave=chave)
+        except NoSuchElementException as msg:
+            logger.error(f'Não encontrou id: {msg} ')
 
     def executar_paginacao(self) -> bool:
         """Execcuta a páginação

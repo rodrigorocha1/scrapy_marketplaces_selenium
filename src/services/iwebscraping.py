@@ -1,29 +1,11 @@
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
-from src.services.iwebscraping import IWebScraping
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 from typing import (
     Generator,
     Tuple
 )
 
 
-class WebScrapingBase(IWebScraping):
-    def __init__(self) -> None:
-        self.__servico = Service(ChromeDriverManager().install())
-        self.navegador = webdriver.Chrome(service=self.__servico)
-        self.navegador.maximize_window()
-
-    def abrir_navegador(self, url: str):
-        """Método para abrir o navegador e conectar na url
-
-        Args:
-            url (str): url do site
-
-        """
-        self.navegador.get(url)
-
+class IWebScraping(ABC):
     @abstractmethod
     def fazer_pesquisa_produto(self, termo_busca: str) -> None:
         """Método para fazer a pesquisa de um produto
