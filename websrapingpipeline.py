@@ -19,5 +19,7 @@ class WebScrapingPipeline:
                 preco_menor=100,
                 preco_maior=150
             )
-            self.__web_scraping_service.coletar_dados_produtos()
+            for produto in self.__web_scraping_service.coletar_dados_produtos():
+                pass
             paginacao = self.__web_scraping_service.executar_paginacao()
+        self.__web_scraping_service.fechar_nagegador()
