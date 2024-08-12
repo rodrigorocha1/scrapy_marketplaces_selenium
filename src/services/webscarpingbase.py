@@ -5,7 +5,7 @@ from src.services.iwebscraping import IWebScraping
 from abc import abstractmethod
 from typing import (
     Generator,
-    Tuple
+    Dict
 )
 
 
@@ -51,11 +51,11 @@ class WebScrapingBase(IWebScraping):
         pass
 
     @abstractmethod
-    def coletar_dados_produtos(self) -> -> Generator[Tuple[str, int, float, str, str], None, None]:
+    def coletar_dados_produtos(self) -> Generator[Dict[str, str | int | float], None, None]:
         """Método para retornar os dados de cada produto por vez
 
         Yields:
-            Generator[Tuple[str, str, str, str, str], None, None]: Um gerador de produtos
+            Generator[Dict[str, str | int | float], None, None]: Um gerador de produtos
         """
         pass
 

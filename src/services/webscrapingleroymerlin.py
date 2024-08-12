@@ -4,7 +4,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from src.services.webscarpingbase import WebScrapingBase
 from src.pacote_log.config__log import logger
-from typing import (Generator, Tuple)
+from typing import (Generator, Dict)
 from datetime import datetime
 from enums.enum_empresa import Empresa
 
@@ -104,11 +104,11 @@ class WebScrapingLeroyMerling(WebScrapingBase):
         """
         self.navegador.execute_script(f'window.scroll(0, {chave * 90})')
 
-    def coletar_dados_produtos(self) -> Generator[Tuple[str, int, float, str, str], None, None]:
+    def coletar_dados_produtos(self) -> Generator[Dict[str, str | int | float], None, None]:
         """Método para retornar os dados de cada produto por vez
 
         Yields:
-            Generator[Tuple[str, str, str, str, str], None, None]: Um gerador de produtos
+            Generator[Dict[str, str | int | float], None, None]: Um gerador de produtos
         """
         try:
             lista_produtos = self.navegador.find_elements(

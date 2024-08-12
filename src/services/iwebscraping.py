@@ -1,7 +1,7 @@
 from abc import abstractmethod, ABC
 from typing import (
     Generator,
-    Tuple
+    Dict
 )
 
 
@@ -41,7 +41,7 @@ class IWebScraping(ABC):
         pass
 
     @abstractmethod
-    def coletar_dados_produtos(self) -> Generator[Tuple[str, int, float, str, str], None, None]:
+    def coletar_dados_produtos(self) -> Generator[Dict[str, str | int | float], None, None]:
         """Método para retornar os dados de cada produto por vez
 
         Yields:
