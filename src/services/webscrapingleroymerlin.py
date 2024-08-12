@@ -12,7 +12,7 @@ from enums.enum_empresa import Empresa
 class WebScrapingLeroyMerling(WebScrapingBase):
 
     def __init__(self) -> None:
-        self.__data_extracao = self.__data_atual()
+
         self.__empresa = Empresa.LEROY_MERLIN
 
         super().__init__()
@@ -132,7 +132,7 @@ class WebScrapingLeroyMerling(WebScrapingBase):
                     'PRECO': float(produto.find_element(
                         By.CLASS_NAME,
                         'css-m39r81-price-tag__price'
-                    ).text.replace('R$', '')),
+                    ).text.replace('R$ ', '').replace(',', '.').strip()),
                     'URL_IMG':  produto.find_element(
                         By.CLASS_NAME,
                         'css-1n5vdld-product-thumbnail__image'
@@ -141,7 +141,7 @@ class WebScrapingLeroyMerling(WebScrapingBase):
                         By.TAG_NAME,
                         'a'
                     ).get_attribute('href'),
-                    'DATA_EXTRACAO':  self.__data_extracao
+                    'DATA_EXTRACAO':  self.__data_atual()
 
                 }
                 self.__executar_rolagem(chave=chave)

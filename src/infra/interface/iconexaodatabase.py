@@ -5,7 +5,15 @@ from abc import (
 from typing import Dict
 
 
-class IDatabaseRepositorio(ABC):
+class IconexaoDatabase(ABC):
+
+    @abstractmethod
+    def conectar_banco(self) -> bool:
+        pass
+
+    def desconectar_banco(self):
+        pass
+
     @abstractmethod
     def inserir_produtos(self, dados: Dict):
         pass
