@@ -29,11 +29,8 @@ class WebScrapingBase(IWebScraping):
 
         return data_formatada
 
-    def abrir_navegador(self, url: str):
+    def abrir_navegador(self):
         """Método para abrir o navegador e conectar na url
-
-        Args:
-            url (str): url do site
 
         """
         self.navegador.get(self.__url)
