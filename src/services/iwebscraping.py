@@ -31,16 +31,6 @@ class IWebScraping(ABC):
         pass
 
     @abstractmethod
-    def selecionar_faixa_preco(self, preco_menor: float, preco_maior: float):
-        """Método para selecionar a faixa de preço
-
-        Args:
-            preco_menor (float): preço menor do produto
-            preco_maior (float): preço maior do produto
-        """
-        pass
-
-    @abstractmethod
     def coletar_dados_produtos(self) -> Generator[Dict[str, str | int | float], None, None]:
         """Método para retornar os dados de cada produto por vez
 
