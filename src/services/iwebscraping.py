@@ -6,6 +6,14 @@ from typing import (
 
 
 class IWebScraping(ABC):
+    @abstractmethod
+    def abrir_navegador(self, url: str):
+        """Método para abrir o navegador e conectar na url
+
+        Args:
+            url (str): url do site
+
+        """
 
     @abstractmethod
     def fazer_pesquisa_produto(self, termo_busca: str) -> None:
@@ -32,4 +40,8 @@ class IWebScraping(ABC):
         Returns:
             bool: Verdadeiro caso a páginação seja feita com sucesso, falso caso contrário
         """
+        pass
+
+    @abstractmethod
+    def fechar_nagegador(self):
         pass

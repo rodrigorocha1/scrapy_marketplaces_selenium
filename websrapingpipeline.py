@@ -15,9 +15,7 @@ class WebScrapingPipeline:
 
         paginacao = True
 
-        self.__web_scraping_service.abrir_navegador(
-            url='https://www.leroymerlin.com.br/'
-        )
+        self.__web_scraping_service.abrir_navegador()
         self.__web_scraping_service.fazer_pesquisa_produto(
             termo_busca='Churrasqueira'
         )
