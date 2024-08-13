@@ -6,7 +6,8 @@ from abc import abstractmethod
 from datetime import datetime
 from typing import (
     Generator,
-    Dict
+    Dict,
+    Optional
 )
 
 
@@ -56,7 +57,7 @@ class WebScrapingBase(IWebScraping):
         pass
 
     @abstractmethod
-    def executar_paginacao(self) -> bool | None:
+    def executar_paginacao(self) -> Optional[bool]:
         """Execcuta a páginação
 
         Returns:

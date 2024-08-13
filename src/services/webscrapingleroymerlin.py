@@ -5,7 +5,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.keys import Keys
 from src.services.webscarpingbase import WebScrapingBase
 from src.pacote_log.config__log import logger
-from typing import (Generator, Dict)
+from typing import (Generator, Dict, Optional)
 from enums.enum_empresa import Empresa
 
 
@@ -119,7 +119,7 @@ class WebScrapingLeroyMerling(WebScrapingBase):
         except NoSuchElementException as msg:
             logger.error(f'Não encontrou id: {msg} ')
 
-    def executar_paginacao(self) -> bool:
+    def executar_paginacao(self) -> Optional[bool]:
         """Execcuta a páginação
 
         Returns:

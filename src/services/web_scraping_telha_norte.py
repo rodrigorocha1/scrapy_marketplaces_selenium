@@ -5,7 +5,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from src.services.webscarpingbase import WebScrapingBase
 from src.pacote_log.config__log import logger
-from typing import (Generator, Dict)
+from typing import (Generator, Dict, Optional)
 from datetime import datetime
 from enums.enum_empresa import Empresa
 
@@ -22,7 +22,7 @@ class WebScrapingTelhaNorte(WebScrapingBase):
 
         busca_produto.send_keys(termo_busca, Keys.ENTER)
 
-    def executar_paginacao(self) -> bool | None:
+    def executar_paginacao(self) -> Optional[bool]:
         while True:
             try:
                 self.navegador.find_element(
