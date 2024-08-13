@@ -11,7 +11,8 @@ from typing import (
 
 
 class WebScrapingBase(IWebScraping):
-    def __init__(self) -> None:
+    def __init__(self, url: str) -> None:
+        self.__url = url
         self.__servico = Service(ChromeDriverManager().install())
         self.navegador = webdriver.Chrome(service=self.__servico)
         self.navegador.maximize_window()
@@ -34,7 +35,7 @@ class WebScrapingBase(IWebScraping):
             url (str): url do site
 
         """
-        self.navegador.get(url)
+        self.navegador.get(self.__url)
 
     @abstractmethod
     def fazer_pesquisa_produto(self, termo_busca: str) -> None:

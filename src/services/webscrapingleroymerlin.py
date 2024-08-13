@@ -11,13 +11,11 @@ from enums.enum_empresa import Empresa
 
 class WebScrapingLeroyMerling(WebScrapingBase):
 
-    def __init__(self, preco_menor: float, preco_maior: float) -> None:
-
+    def __init__(self,  preco_menor: float, preco_maior: float) -> None:
         self.__empresa = Empresa.LEROY_MERLIN
-        self.__preco_maior = preco_maior
         self.__preco_menor = preco_menor
-
-        super().__init__()
+        self.__preco_maior = preco_maior
+        super().__init__(url='https://www.leroymerlin.com.br/')
 
     def fazer_pesquisa_produto(self, termo_busca: str) -> None:
         """Método para abrir o navegador e conectar na url

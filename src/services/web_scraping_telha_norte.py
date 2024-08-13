@@ -14,7 +14,7 @@ class WebScrapingTelhaNorte(WebScrapingBase):
 
     def __init__(self) -> None:
         self.__empresa = Empresa.TELHA_NORTE
-        super().__init__()
+        super().__init__(url='https://www.telhanorte.com.br/')
 
     def fazer_pesquisa_produto(self, termo_busca: str) -> None:
         busca_produto = self.navegador.find_element(
