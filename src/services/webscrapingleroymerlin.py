@@ -2,40 +2,22 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.keys import Keys
 from src.services.webscarpingbase import WebScrapingBase
 from src.pacote_log.config__log import logger
 from typing import (Generator, Dict)
-from datetime import datetime
 from enums.enum_empresa import Empresa
 
 
 class WebScrapingLeroyMerling(WebScrapingBase):
 
-    def __init__(self) -> None:
+    def __init__(self, preco_menor: float, preco_maior: float) -> None:
 
         self.__empresa = Empresa.LEROY_MERLIN
+        self.__preco_maior = preco_maior
+        self.__preco_menor = preco_menor
 
         super().__init__()
-
-    def abrir_navegador(self, url: str):
-        """Método para abrir o navegador e conectar na url
-
-        Args:
-            url (str): url do site
-
-        """
-        self.navegador.get(url)
-
-    def __data_atual(self) -> datetime:
-        """Método para obter a data atual
-
-        Returns:
-            datetime: data_atual
-        """
-        data_atual = datetime.now()
-        data_formatada = data_atual.strftime('%Y-%m-%d %H:%M:%S')
-
-        return data_formatada
 
     def fazer_pesquisa_produto(self, termo_busca: str) -> None:
         """Método para abrir o navegador e conectar na url
@@ -49,7 +31,7 @@ class WebScrapingLeroyMerling(WebScrapingBase):
                 By.ID,
                 '@autocomplete-quicksearch-input'
             )
-            busca_produto.send_keys(termo_busca)
+            busca_produto.send_keys(termo_busca, Keys.ENTER)
         except NoSuchElementException as msg:
             logger.error(f'Não encontrou id: {msg} ')
 
@@ -65,32 +47,22 @@ class WebScrapingLeroyMerling(WebScrapingBase):
             )
         )
 
-    def clicar_botao_pesquisa(self) -> None:
-        """Método para fazer a pesquisa
-        """
-        self.navegador.find_element(
-            By.XPATH,
-            '/html/body/header/div[2]/div/div[1]/form/div/div[1]/div/div/button'
-        ).click()
-
-    def selecionar_faixa_preco(self, preco_menor: float, preco_maior: float):
+    def __selecionar_faixa_preco(self):
         """Método para selecionar a faixa de preço
 
-        Args:
-            preco_menor (float): preço menor do produto
-            preco_maior (float): preço maior do produto
+
         """
         self.__esperar_elemento()
         preco_minimo = self.navegador.find_element(
             By.CSS_SELECTOR,
             '#mobile-filter-content > div > div > div:nth-child(6) > div.flex-1.px-4.py-4 > div > div:nth-child(1) > div > input'
         )
-        preco_minimo.send_keys(preco_menor)
+        preco_minimo.send_keys(self.__preco_menor)
         preco_maximo = self.navegador.find_element(
             By.XPATH,
             '//*[@id="mobile-filter-content"]/div/div/div[6]/div[2]/div/div[2]/div/input'
         )
-        preco_maximo.send_keys(preco_maior)
+        preco_maximo.send_keys(self.__preco_maior)
         self.navegador.find_element(
             By.XPATH,
             '//*[@id="mobile-filter-content"]/div/div/div[6]/div[2]/div/button'
@@ -111,6 +83,7 @@ class WebScrapingLeroyMerling(WebScrapingBase):
             Generator[Dict[str, str | int | float], None, None]: Um gerador de produtos
         """
         try:
+            self.__selecionar_faixa_preco()
             lista_produtos = self.navegador.find_elements(
                 By.CLASS_NAME,
                 'new-product-thumb'
@@ -141,7 +114,7 @@ class WebScrapingLeroyMerling(WebScrapingBase):
                         By.TAG_NAME,
                         'a'
                     ).get_attribute('href'),
-                    'DATA_EXTRACAO':  self.__data_atual()
+                    'DATA_EXTRACAO':  self._data_atual()
 
                 }
                 self.__executar_rolagem(chave=chave)
@@ -160,6 +133,3 @@ class WebScrapingLeroyMerling(WebScrapingBase):
             return True
         except:
             return False
-
-    def fechar_nagegador(self):
-        self.navegador.close()

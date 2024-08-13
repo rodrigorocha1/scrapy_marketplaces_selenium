@@ -8,25 +8,11 @@ from typing import (
 class IWebScraping(ABC):
 
     @abstractmethod
-    def abrir_navegador(self, url: str):
-        """Método para abrir o navegador e conectar na url
-
-        Args:
-            url (str): url do site
-
-        """
-    @abstractmethod
     def fazer_pesquisa_produto(self, termo_busca: str) -> None:
         """Método para fazer a pesquisa de um produto
 
         Args:
             termo_busca (str): Nome do produto: Ex: Churrasqueira
-        """
-        pass
-
-    @abstractmethod
-    def clicar_botao_pesquisa(self) -> None:
-        """Método para fazer a pesquisa
         """
         pass
 
@@ -40,16 +26,10 @@ class IWebScraping(ABC):
         pass
 
     @abstractmethod
-    def executar_paginacao(self) -> bool:
+    def executar_paginacao(self) -> bool | None:
         """Execcuta a páginação
 
         Returns:
             bool: Verdadeiro caso a páginação seja feita com sucesso, falso caso contrário
-        """
-        pass
-
-    @abstractmethod
-    def fechar_nagegador(self):
-        """Método para fechar navegador
         """
         pass

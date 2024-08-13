@@ -3,6 +3,7 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from src.services.iwebscraping import IWebScraping
 from abc import abstractmethod
+from datetime import datetime
 from typing import (
     Generator,
     Dict
@@ -15,7 +16,17 @@ class WebScrapingBase(IWebScraping):
         self.navegador = webdriver.Chrome(service=self.__servico)
         self.navegador.maximize_window()
 
-    @abstractmethod
+    def _data_atual(self) -> datetime:
+        """Método para obter a data atual
+
+        Returns:
+            datetime: data_atual
+        """
+        data_atual = datetime.now()
+        data_formatada = data_atual.strftime('%Y-%m-%d %H:%M:%S')
+
+        return data_formatada
+
     def abrir_navegador(self, url: str):
         """Método para abrir o navegador e conectar na url
 
@@ -23,7 +34,7 @@ class WebScrapingBase(IWebScraping):
             url (str): url do site
 
         """
-        pass
+        self.navegador.get(url)
 
     @abstractmethod
     def fazer_pesquisa_produto(self, termo_busca: str) -> None:
@@ -31,12 +42,6 @@ class WebScrapingBase(IWebScraping):
 
         Args:
             termo_busca (str): Nome do produto: Ex: Churrasqueira
-        """
-        pass
-
-    @abstractmethod
-    def clicar_botao_pesquisa(self) -> None:
-        """Método para fazer a pesquisa
         """
         pass
 
@@ -50,7 +55,7 @@ class WebScrapingBase(IWebScraping):
         pass
 
     @abstractmethod
-    def executar_paginacao(self) -> bool:
+    def executar_paginacao(self) -> bool | None:
         """Execcuta a páginação
 
         Returns:
@@ -59,6 +64,4 @@ class WebScrapingBase(IWebScraping):
         pass
 
     def fechar_nagegador(self):
-        """Método para fechar o navegador
-        """
-        pass
+        self.navegador.close()
