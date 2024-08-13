@@ -20,10 +20,7 @@ class WebScrapingPipeline:
             termo_busca='Churrasqueira'
         )
         self.__web_scraping_service.clicar_botao_pesquisa()
-        self.__web_scraping_service.selecionar_faixa_preco(
-            preco_menor=100,
-            preco_maior=150
-        )
+        self.__web_scraping_service.selecionar_faixa_preco()
         while paginacao:
 
             sleep(3)
