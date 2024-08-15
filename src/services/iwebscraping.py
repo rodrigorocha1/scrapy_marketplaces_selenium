@@ -34,14 +34,5 @@ class IWebScraping(ABC):
         pass
 
     @abstractmethod
-    def executar_paginacao(self) -> bool | None:
-        """Execcuta a páginação
-
-        Returns:
-            bool: Verdadeiro caso a páginação seja feita com sucesso, falso caso contrário
-        """
-        pass
-
-    @abstractmethod
     def fechar_nagegador(self):
         pass

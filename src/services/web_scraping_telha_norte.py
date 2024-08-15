@@ -32,6 +32,7 @@ class WebScrapingTelhaNorte(WebScrapingBase):
                 break
 
     def coletar_dados_produtos(self) -> Generator[Dict[str, str | int | float], None, None]:
+        self.executar_paginacao()
         nome_produtos = self.navegador.find_elements(
             By.CLASS_NAME, 'vtex-product-summary-2-x-productBrand')
         precos = self.navegador.find_elements(
@@ -48,7 +49,7 @@ class WebScrapingTelhaNorte(WebScrapingBase):
                 'CODIGO_EMPRESA':  self.__empresa.value,
                 'NOME_PRODUTO': produto.text,
                 'CODIGO': int(url_produto.get_attribute('href').split('-')[-1].replace('/p', '')),
-                'PRECO': float(preco.text.replace(',', '.').strip()),
+                'PRECO': float(preco.text.replace('.', '').replace(',', '.').replace('R$', '').strip()),
                 'URL_IMG':  url_imagem.get_attribute('src'),
                 'URL_PRODUTO': url_produto.get_attribute('href'),
                 'DATA_EXTRACAO':  self._data_atual()

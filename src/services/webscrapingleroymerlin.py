@@ -116,6 +116,8 @@ class WebScrapingLeroyMerling(WebScrapingBase):
 
                 }
                 self.__executar_rolagem(chave=chave)
+                if not self.executar_paginacao():
+                    break
         except NoSuchElementException as msg:
             logger.error(f'Não encontrou id: {msg} ')
 

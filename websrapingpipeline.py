@@ -1,5 +1,6 @@
 from src.services.iwebscraping import IWebScraping
 from src.services.webscrapingleroymerlin import WebScrapingLeroyMerling
+from src.services.web_scraping_telha_norte import WebScrapingTelhaNorte
 from src.pacote_log.config__log import logger
 from time import sleep
 from src.infra.interface.iconexaodatabase import IconexaoDatabase
@@ -13,26 +14,19 @@ class WebScrapingPipeline:
 
     def rodar_web_scraping(self):
 
-        paginacao = True
-
         self.__web_scraping_service.abrir_navegador()
         self.__web_scraping_service.fazer_pesquisa_produto(
-            termo_busca='Churrasqueira'
+            termo_busca='Telha'
         )
-        self.__web_scraping_service.clicar_botao_pesquisa()
-        self.__web_scraping_service.selecionar_faixa_preco()
-        while paginacao:
-
-            sleep(3)
-            for produto in self.__web_scraping_service.coletar_dados_produtos():
-                self.__operacoes_banco.inserir_produtos(dados=produto)
-            paginacao = self.__web_scraping_service.executar_paginacao()
+        sleep(3)
+        for produto in self.__web_scraping_service.coletar_dados_produtos():
+            self.__operacoes_banco.inserir_produtos(dados=produto)
         self.__web_scraping_service.fechar_nagegador()
 
 
 logger.info('Iniciando web Scraping')
 ws = WebScrapingPipeline(
-    web_scraping_service=WebScrapingLeroyMerling(),
+    web_scraping_service=WebScrapingTelhaNorte(),
     operacoes_banco=ConexaoBancoSQLITE()
 )
 ws.rodar_web_scraping()
