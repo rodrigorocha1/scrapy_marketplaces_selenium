@@ -7,6 +7,7 @@ from src.services.webscarpingbase import WebScrapingBase
 from src.pacote_log.config__log import logger
 from typing import (Generator, Dict, Optional)
 from datetime import datetime
+import re
 from enums.enum_empresa import Empresa
 
 
@@ -49,7 +50,11 @@ class WebScrapingTelhaNorte(WebScrapingBase):
                 'CODIGO_EMPRESA':  self.__empresa.value,
                 'NOME_PRODUTO': produto.text,
                 'CODIGO': int(url_produto.get_attribute('href').split('-')[-1].replace('/p', '')),
-                'PRECO': float(preco.text.replace('.', '').replace(',', '.').replace('R$', '').strip()),
+                'PRECO': float(
+                    re.sub(r'[^\d.,]', '', preco.text.replace(
+                        '.', '').replace(',', '.').replace('R$', '').strip())
+
+                ),
                 'URL_IMG':  url_imagem.get_attribute('src'),
                 'URL_PRODUTO': url_produto.get_attribute('href'),
                 'DATA_EXTRACAO':  self._data_atual()

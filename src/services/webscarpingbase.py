@@ -7,16 +7,21 @@ from datetime import datetime
 from typing import (
     Generator,
     Dict,
-    Optional
+    Optional,
+    Tuple
 )
 
 
 class WebScrapingBase(IWebScraping):
     def __init__(self, url: str) -> None:
         self.__url = url
-        self.__servico = Service(ChromeDriverManager().install())
-        self.navegador = webdriver.Chrome(service=self.__servico)
-        self.navegador.maximize_window()
+        self.navegador = self.iniciar_servico()
+
+    def iniciar_servico(self) -> webdriver:
+        servico = Service(ChromeDriverManager().install())
+        navegador = webdriver.Chrome(service=servico)
+        navegador.maximize_window()
+        return navegador
 
     def _data_atual(self) -> datetime:
         """Método para obter a data atual

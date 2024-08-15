@@ -1,11 +1,17 @@
 from abc import abstractmethod, ABC
 from typing import (
     Generator,
-    Dict
+    Dict,
+    Tuple
 )
 
 
 class IWebScraping(ABC):
+
+    @abstractmethod
+    def iniciar_servico(self) -> Tuple:
+        pass
+
     @abstractmethod
     def abrir_navegador(self, url: str):
         """Método para abrir o navegador e conectar na url
