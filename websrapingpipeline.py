@@ -48,16 +48,17 @@ class WebScrapingPipeline:
     def rodar_web_scraping(self):
         """Método para rodar o serviço web scraping
         """
+        try:
+            self.__web_scraping_service.abrir_navegador()
+            self.__web_scraping_service.fazer_pesquisa_produto(
+                termo_busca='Churrasqueira'
+            )
 
-        self.__web_scraping_service.abrir_navegador()
-        self.__web_scraping_service.fazer_pesquisa_produto(
-            termo_busca='Churrasqueira'
-        )
-
-        logger.info('Inserindo produtos no banco')
-        for produto in self.__web_scraping_service.coletar_dados_produtos():
-            self.__operacoes_banco.inserir_produtos(dados=produto)
-        self.__web_scraping_service.fechar_nagegador()
+            logger.info('Inserindo produtos no banco')
+            for produto in self.__web_scraping_service.coletar_dados_produtos():
+                self.__operacoes_banco.inserir_produtos(dados=produto)
+        finally:
+            self.__web_scraping_service.fechar_nagegador()
 
 
 if __name__ == '__main__':
