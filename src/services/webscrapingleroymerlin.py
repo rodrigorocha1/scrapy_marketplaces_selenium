@@ -101,12 +101,16 @@ class WebScrapingLeroyMerling(WebScrapingBase):
             preco_maximo.send_keys(self.__preco_maior, Keys.ENTER)
         except NoSuchElementException as msg:
             logger.error(f'Não encontrou elemento: {msg} ')
+            exit()
         except ElementNotInteractableException:
             logger.error('Elemento não pode ser interagido')
+            exit()
         except InvalidElementStateException:
             logger.error('Falha na operação de enviar teclas')
+            exit()
         except Exception:
             logger.error('Falha Geral')
+            exit()
 
     def __executar_rolagem(self):
         """Executa a barra de rolagem
@@ -129,8 +133,10 @@ class WebScrapingLeroyMerling(WebScrapingBase):
             sleep(3)
         except TimeoutException:
             logger.error('Tempo Esgotado')
+            exit()
         except Exception:
             logger.error('Falha Geral')
+            exit()
 
     def coletar_dados_produtos(self) -> Generator[Dict[str, str | int | float], None, None]:
         """Método para retornar os dados de cada produto por vez
@@ -183,8 +189,10 @@ class WebScrapingLeroyMerling(WebScrapingBase):
 
             except NoSuchElementException as msg:
                 logger.error(f'Não encontrou id: {msg} ')
+                exit()
             except Exception:
                 logger.error('Falha Geral')
+                exit()
 
     def executar_paginacao(self) -> Optional[bool]:
         """Execcuta a páginação

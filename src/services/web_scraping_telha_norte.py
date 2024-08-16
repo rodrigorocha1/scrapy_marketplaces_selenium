@@ -36,12 +36,16 @@ class WebScrapingTelhaNorte(WebScrapingBase):
 
         except NoSuchElementException as msg:
             logger.error(f'Não encontrou elemento: {msg} ')
+            exit()
         except ElementNotInteractableException:
             logger.error('Elemento não pode ser interagido')
+            exit()
         except InvalidElementStateException:
             logger.error('Falha na operação de enviar teclas')
+            exit()
         except Exception:
             logger.error('Falha Geral')
+            exit()
 
     def executar_paginacao(self) -> Optional[bool]:
         """Método para executar páginação
@@ -93,5 +97,7 @@ class WebScrapingTelhaNorte(WebScrapingBase):
                 }
         except NoSuchElementException as msg:
             logger.error(f'Não encontrou id: {msg} ')
+            exit()
         except Exception:
             logger.error('Falha Geral')
+            exit()
