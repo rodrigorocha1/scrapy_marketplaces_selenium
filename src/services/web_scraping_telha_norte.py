@@ -1,5 +1,11 @@
 from selenium.webdriver.common.by import By
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import (
+    NoSuchElementException,
+    TimeoutException,
+    ElementNotInteractableException,
+    ElementClickInterceptedException,
+    InvalidElementStateException
+)
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from src.services.webscarpingbase import WebScrapingBase
@@ -16,10 +22,20 @@ class WebScrapingTelhaNorte(WebScrapingBase):
         super().__init__(url='https://www.telhanorte.com.br/')
 
     def fazer_pesquisa_produto(self, termo_busca: str) -> None:
-        busca_produto = self.navegador.find_element(
-            By.CLASS_NAME, 'vtex-styleguide-9-x-input')
+        try:
+            busca_produto = self.navegador.find_element(
+                By.CLASS_NAME, 'vtex-styleguide-9-x-input')
 
-        busca_produto.send_keys(termo_busca, Keys.ENTER)
+            busca_produto.send_keys(termo_busca, Keys.ENTER)
+
+        except NoSuchElementException as msg:
+            logger.error(f'Não encontrou elemento: {msg} ')
+        except ElementNotInteractableException:
+            logger.error('Elemento não pode ser interagido')
+        except InvalidElementStateException:
+            logger.error('Falha na operação de enviar teclas')
+        except Exception:
+            logger.error('Falha Geral')
 
     def executar_paginacao(self) -> Optional[bool]:
         while True:
@@ -31,30 +47,35 @@ class WebScrapingTelhaNorte(WebScrapingBase):
                 break
 
     def coletar_dados_produtos(self) -> Generator[Dict[str, str | int | float], None, None]:
-        self.executar_paginacao()
-        nome_produtos = self.navegador.find_elements(
-            By.CLASS_NAME, 'vtex-product-summary-2-x-productBrand')
-        precos = self.navegador.find_elements(
-            By.CLASS_NAME, 'telhanorte-telha-store-app-1-x-best-price-price-vitrini')
-        url_produtos = self.navegador.find_elements(
-            By.CLASS_NAME, 'vtex-product-summary-2-x-clearLink'
-        )
-        url_imagens = self.navegador.find_elements(
-            By.XPATH, '//section/a/article/div[2]/img')
+        try:
+            self.executar_paginacao()
+            nome_produtos = self.navegador.find_elements(
+                By.CLASS_NAME, 'vtex-product-summary-2-x-productBrand')
+            precos = self.navegador.find_elements(
+                By.CLASS_NAME, 'telhanorte-telha-store-app-1-x-best-price-price-vitrini')
+            url_produtos = self.navegador.find_elements(
+                By.CLASS_NAME, 'vtex-product-summary-2-x-clearLink'
+            )
+            url_imagens = self.navegador.find_elements(
+                By.XPATH, '//section/a/article/div[2]/img')
 
-        for produto, preco, url_produto, url_imagem in zip(nome_produtos, precos, url_produtos, url_imagens):
-            yield {
-                'EMPRESA': self.__empresa.name,
-                'CODIGO_EMPRESA':  self.__empresa.value,
-                'NOME_PRODUTO': produto.text,
-                'CODIGO': int(url_produto.get_attribute('href').split('-')[-1].replace('/p', '')),
-                'PRECO': float(
-                    re.sub(r'[^\d.,]', '', preco.text.replace(
-                        '.', '').replace(',', '.').replace('R$', '').strip())
+            for produto, preco, url_produto, url_imagem in zip(nome_produtos, precos, url_produtos, url_imagens):
+                yield {
+                    'EMPRESA': self.__empresa.name,
+                    'CODIGO_EMPRESA':  self.__empresa.value,
+                    'NOME_PRODUTO': produto.text,
+                    'CODIGO': int(url_produto.get_attribute('href').split('-')[-1].replace('/p', '')),
+                    'PRECO': float(
+                        re.sub(r'[^\d.,]', '', preco.text.replace(
+                            '.', '').replace(',', '.').replace('R$', '').strip())
 
-                ),
-                'URL_IMG':  url_imagem.get_attribute('src'),
-                'URL_PRODUTO': url_produto.get_attribute('href'),
-                'DATA_EXTRACAO':  self._data_atual()
+                    ),
+                    'URL_IMG':  url_imagem.get_attribute('src'),
+                    'URL_PRODUTO': url_produto.get_attribute('href'),
+                    'DATA_EXTRACAO':  self._data_atual()
 
-            }
+                }
+        except NoSuchElementException as msg:
+            logger.error(f'Não encontrou id: {msg} ')
+        except Exception:
+            logger.error('Falha Geral')

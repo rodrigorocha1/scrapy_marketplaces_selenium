@@ -5,8 +5,8 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 
-file_handler = logging.FileHandler('Exemplo.log', encoding='utf-8')
-file_handler.setLevel(logging.INFO)
+file_handler = logging.FileHandler('web_scraping.log', encoding='utf-8')
+file_handler.setLevel(logging.ERROR)
 
 
 console_handler = logging.StreamHandler()

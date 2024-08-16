@@ -1,5 +1,11 @@
 from selenium.webdriver.common.by import By
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import (
+    NoSuchElementException,
+    TimeoutException,
+    ElementNotInteractableException,
+    ElementClickInterceptedException,
+    InvalidElementStateException
+)
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.keys import Keys
@@ -32,42 +38,75 @@ class WebScrapingLeroyMerling(WebScrapingBase):
             )
             busca_produto.send_keys(termo_busca, Keys.ENTER)
         except NoSuchElementException as msg:
-            logger.error(f'Não encontrou id: {msg} ')
+            logger.error(f'Não encontrou elemento: {msg} ')
+        except ElementNotInteractableException:
+            logger.error('Elemento não pode ser interagido')
+        except InvalidElementStateException:
+            logger.error('Falha na operação de enviar teclas')
+        except Exception:
+            logger.error('Falha Geral')
 
     def clicar_cookie(self):
-        WebDriverWait(self.navegador, 20).until(
-            EC.presence_of_element_located(
-                (By.ID,
-                 'onetrust-accept-btn-handler'))).click()
+        try:
+            WebDriverWait(self.navegador, 20).until(
+                EC.presence_of_element_located(
+                    (By.ID,
+                     'onetrust-accept-btn-handler'))).click()
+        except NoSuchElementException as msg:
+            logger.error(f'Não encontrou elemento: {msg} ')
+        except TimeoutException as msg:
+            logger.error('Tempo esgotado')
+        except ElementNotInteractableException:
+            logger.error('Elemento não pode ser interagido')
+        except ElementClickInterceptedException:
+            logger.error('Falha de clique')
+        except Exception:
+            logger.error('Falha Geral')
 
     def __esperar_elemento(self):
         """Espera a tag do css antes de fazer as pesquisas
         """
-        WebDriverWait(self.navegador, 20).until(
-            EC.presence_of_element_located(
-                (
-                    By.CSS_SELECTOR,
-                    '#mobile-filter-content > div > div > div:nth-child(6) > div.flex-1.px-4.py-4 > div > div:nth-child(1) > div > input'
+
+        try:
+            WebDriverWait(self.navegador, 20).until(
+                EC.presence_of_element_located(
+                    (
+                        By.CSS_SELECTOR,
+                        '#mobile-filter-content > div > div > div:nth-child(6) > div.flex-1.px-4.py-4 > div > div:nth-child(1) > div > input'
+                    )
                 )
             )
-        )
+
+        except TimeoutException:
+            logger.error('Tempo Esgotado')
+        except Exception:
+            logger.error('Falha Geral')
 
     def __selecionar_faixa_preco(self):
         """Método para selecionar a faixa de preço
 
 
         """
-        self.__esperar_elemento()
-        preco_minimo = self.navegador.find_element(
-            By.CSS_SELECTOR,
-            '#mobile-filter-content > div > div > div:nth-child(6) > div.flex-1.px-4.py-4 > div > div:nth-child(1) > div > input'
-        )
-        preco_minimo.send_keys(self.__preco_menor)
-        preco_maximo = self.navegador.find_element(
-            By.XPATH,
-            '//*[@id="mobile-filter-content"]/div/div/div[6]/div[2]/div/div[2]/div/input'
-        )
-        preco_maximo.send_keys(self.__preco_maior, Keys.ENTER)
+        try:
+            self.__esperar_elemento()
+            preco_minimo = self.navegador.find_element(
+                By.CSS_SELECTOR,
+                '#mobile-filter-content > div > div > div:nth-child(6) > div.flex-1.px-4.py-4 > div > div:nth-child(1) > div > input'
+            )
+            preco_minimo.send_keys(self.__preco_menor)
+            preco_maximo = self.navegador.find_element(
+                By.XPATH,
+                '//*[@id="mobile-filter-content"]/div/div/div[6]/div[2]/div/div[2]/div/input'
+            )
+            preco_maximo.send_keys(self.__preco_maior, Keys.ENTER)
+        except NoSuchElementException as msg:
+            logger.error(f'Não encontrou elemento: {msg} ')
+        except ElementNotInteractableException:
+            logger.error('Elemento não pode ser interagido')
+        except InvalidElementStateException:
+            logger.error('Falha na operação de enviar teclas')
+        except Exception:
+            logger.error('Falha Geral')
 
     def __executar_rolagem(self):
         """Executa a barra de rolagem
@@ -78,15 +117,20 @@ class WebScrapingLeroyMerling(WebScrapingBase):
             self.navegador.execute_script(f'window.scroll(1, {i * 60})')
 
     def __aguardar_listagem_produtos(self):
-        WebDriverWait(self.navegador, 30).until(
-            EC.presence_of_element_located(
-                (
-                    By.CLASS_NAME,
-                    'new-product-thumb'
+        try:
+            WebDriverWait(self.navegador, 30).until(
+                EC.presence_of_element_located(
+                    (
+                        By.CLASS_NAME,
+                        'new-product-thumb'
+                    )
                 )
             )
-        )
-        sleep(3)
+            sleep(3)
+        except TimeoutException:
+            logger.error('Tempo Esgotado')
+        except Exception:
+            logger.error('Falha Geral')
 
     def coletar_dados_produtos(self) -> Generator[Dict[str, str | int | float], None, None]:
         """Método para retornar os dados de cada produto por vez
@@ -139,6 +183,8 @@ class WebScrapingLeroyMerling(WebScrapingBase):
 
             except NoSuchElementException as msg:
                 logger.error(f'Não encontrou id: {msg} ')
+            except Exception:
+                logger.error('Falha Geral')
 
     def executar_paginacao(self) -> Optional[bool]:
         """Execcuta a páginação
