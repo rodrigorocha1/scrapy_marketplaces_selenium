@@ -16,6 +16,7 @@ class WebScrapingBase(IWebScraping):
         self.__url = url
         self.__sevico = Service(ChromeDriverManager().install())
         self.navegador = webdriver.Chrome(service=self.__sevico)
+        self.navegador.maximize_window()
 
     def _data_atual(self) -> datetime:
         """Método para obter a data atual

@@ -1,7 +1,7 @@
 from src.services.iwebscraping import IWebScraping
 from src.services.webscrapingleroymerlin import WebScrapingLeroyMerling
 from src.services.web_scraping_telha_norte import WebScrapingTelhaNorte
-from src.pacote_log.config__log import configurar_logger
+from src.pacote_log.config__log import logger
 from src.infra.interface.iconexaodatabase import IconexaoDatabase
 from src.infra.conexao_banco_sqlite import ConexaoBancoSQLITE
 
@@ -54,4 +54,4 @@ for servico_web_scraping in [1, 2]:
         opcao=servico_web_scraping
     )
     ws.rodar_web_scraping()
-logger.info('Fim web Scraping')
+logger().info('Fim web Scraping')

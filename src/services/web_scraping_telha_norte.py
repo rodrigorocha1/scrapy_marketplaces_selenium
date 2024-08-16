@@ -3,7 +3,7 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from src.services.webscarpingbase import WebScrapingBase
-from src.pacote_log.config__log import configurar_logger
+from src.pacote_log.config__log import logger
 from typing import (Generator, Dict, Optional)
 import re
 from enums.enum_empresa import Empresa

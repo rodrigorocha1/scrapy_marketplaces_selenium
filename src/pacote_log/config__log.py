@@ -1,23 +1,23 @@
 import logging
 
 
-def configurar_logger(nome_logger='app', arquivo_log='app.log', nivel=logging.INFO):
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
-    logger = logging.getLogger(nome_logger)
-    logger.setLevel(nivel)
 
-    formatador = logging.Formatter(
-        '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+file_handler = logging.FileHandler('Exemplo.log', encoding='utf-8')
+file_handler.setLevel(logging.INFO)
 
-    # Cria e configura o manipulador de console
-    manipulador_console = logging.StreamHandler()
-    manipulador_console.setFormatter(formatador)
-    logger.addHandler(manipulador_console)
 
-    # Se o arquivo de log for fornecido, cria e configura o manipulador de arquivo
-    if arquivo_log:
-        manipulador_arquivo = logging.FileHandler(arquivo_log)
-        manipulador_arquivo.setFormatter(formatador)
-        logger.addHandler(manipulador_arquivo)
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
 
-    return logger
+
+formatter = logging.Formatter(
+    '%(asctime)s - %(name)s - %(levelname)s - %(message)s - %(filename)s - %(funcName)s')
+file_handler.setFormatter(formatter)
+console_handler.setFormatter(formatter)
+
+# Adiciona os handlers ao logger
+logger.addHandler(file_handler)
+logger.addHandler(console_handler)

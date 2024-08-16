@@ -94,7 +94,7 @@ class WebScrapingLeroyMerling(WebScrapingBase):
         Yields:
             Generator[Dict[str, str | int | float], None, None]: Um gerador de produtos
         """
-        self.clicar_cookie()
+        # self.clicar_cookie()
         self.__selecionar_faixa_preco()
         paginacao = True
         while paginacao:
@@ -102,10 +102,6 @@ class WebScrapingLeroyMerling(WebScrapingBase):
 
                 self.__aguardar_listagem_produtos()
                 self.__executar_rolagem()
-                lista_produtos = self.navegador.find_elements(
-                    By.CLASS_NAME,
-                    'new-product-thumb'
-                )
                 nome_produtos = self.navegador.find_elements(
                     By.CLASS_NAME,
                     'css-1eaoahv-ellipsis'
@@ -118,53 +114,28 @@ class WebScrapingLeroyMerling(WebScrapingBase):
                     By.CLASS_NAME,
                     'css-m39r81-price-tag__price'
                 )
-                url_imagens = self.navegador.finds_elements(
-                    By.CLASS_NAME(
-                        By.CLASS_NAME,
-                        'css-m39r81-price-tag__price'
-                    )
+                url_imagens = self.navegador.find_elements(
+                    By.CLASS_NAME,
+                    'css-1n5vdld-product-thumbnail__image'
                 )
-                url_produtos = self.navegador.find_elements()
+                url_produtos = self.navegador.find_elements(
+                    By.CLASS_NAME, 'css-1c4absn-new-product-thumb__title')
 
-                for chave, produto in enumerate(lista_produtos):
-                    try:
-                        yield {
-                            'EMPRESA': self.__empresa.name,
-                            'CODIGO_EMPRESA':  self.__empresa.value,
-                            'NOME_PRODUTO': produto.find_element(
-                                By.CLASS_NAME,
-                                'css-1eaoahv-ellipsis'
-                            ).text,
-                            'CODIGO': int(produto.find_element(
-                                By.CLASS_NAME,
-                                'css-19qfvzb-new-product-thumb__product-code'
-                            ).text.replace('Cód. ', '')
-                            ),
-                            'PRECO': float(produto.find_element(
-                                By.CLASS_NAME,
-                                'css-m39r81-price-tag__price'
-                            ).text.replace('R$ ', '').replace('.', '').replace(',', '.').strip()),
-                            'URL_IMG':  produto.find_element(
-                                By.CLASS_NAME,
-                                'css-1n5vdld-product-thumbnail__image'
-                            ).get_attribute('src'),
-                            'URL_PRODUTO': produto.find_element(
-                                By.TAG_NAME,
-                                'a'
-                            ).get_attribute('href'),
-                            'DATA_EXTRACAO':  self._data_atual()
+                for nome_produto, codigo_produto, preco_produto, url_imagem, url_produto in zip(nome_produtos, codigos_produtos, precos_produto, url_imagens, url_produtos):
 
-                        }
-                        paginacao = self.executar_paginacao()
+                    yield {
+                        'EMPRESA': self.__empresa.name,
+                        'CODIGO_EMPRESA':  self.__empresa.value,
+                        'NOME_PRODUTO': nome_produto.text,
+                        'CODIGO': int(codigo_produto.text.replace('Cód. ', '')
+                                      ),
+                        'PRECO': float(preco_produto.text.replace('R$ ', '').replace('.', '').replace(',', '.').strip()),
+                        'URL_IMG':  url_imagem.get_attribute('src'),
+                        'URL_PRODUTO': url_produto.get_attribute('href'),
+                        'DATA_EXTRACAO':  self._data_atual()
 
-                    except Exception:
-                        print(produto.find_element(
-                            By.CLASS_NAME,
-                            'css-1eaoahv-ellipsis'
-                        ).text, produto.find_element(
-                            By.CLASS_NAME,
-                            'css-m39r81-price-tag__price'
-                        ).text)
+                    }
+                paginacao = self.executar_paginacao()
 
             except NoSuchElementException as msg:
                 logger.error(f'Não encontrou id: {msg} ')
