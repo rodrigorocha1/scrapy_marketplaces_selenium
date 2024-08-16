@@ -65,7 +65,8 @@ class WebScrapingPipeline:
 
 if __name__ == '__main__':
     logger.info('Iniciando web Scraping')
-    for servico_web_scraping in [Empresa.LEROY_MERLIN.value, Empresa.TELHA_NORTE.value]:
+    for servico_web_scraping in [Empresa.LEROY_MERLIN, Empresa.TELHA_NORTE]:
+        print(servico_web_scraping)
         ws = WebScrapingPipeline(
             operacoes_banco=ConexaoBancoSQLITE(),
             preco_menor=100,
