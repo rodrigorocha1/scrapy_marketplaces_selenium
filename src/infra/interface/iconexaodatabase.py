@@ -11,6 +11,7 @@ class IconexaoDatabase(ABC):
     def conectar_banco(self) -> bool:
         pass
 
+    @abstractmethod
     def desconectar_banco(self):
         pass
 
