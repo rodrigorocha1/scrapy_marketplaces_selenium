@@ -54,4 +54,4 @@ for servico_web_scraping in [1, 2]:
         opcao=servico_web_scraping
     )
     ws.rodar_web_scraping()
-logger().info('Fim web Scraping')
+logger.info('Fim web Scraping')
