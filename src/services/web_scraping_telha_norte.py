@@ -30,7 +30,9 @@ class WebScrapingTelhaNorte(WebScrapingBase):
         """
         try:
             busca_produto = self.navegador.find_element(
-                By.CLASS_NAME, 'vtex-styleguide-9-x-input')
+                By.CLASS_NAME,
+                'vtex-styleguide-9-x-input'
+            )
 
             busca_produto.send_keys(termo_busca, Keys.ENTER)
 
@@ -56,7 +58,8 @@ class WebScrapingTelhaNorte(WebScrapingBase):
         while True:
             try:
                 self.navegador.find_element(
-                    By.XPATH, '/html/body/div[2]/div/div[1]/div/div[1]/div/div[4]/section/div[2]/div/div[3]/div/a/div'
+                    By.XPATH,
+                    '/html/body/div[2]/div/div[1]/div/div[1]/div/div[4]/section/div[2]/div/div[3]/div/a/div'
                 ).click()
             except Exception as E:
                 break
@@ -70,14 +73,21 @@ class WebScrapingTelhaNorte(WebScrapingBase):
         try:
             self.executar_paginacao()
             nome_produtos = self.navegador.find_elements(
-                By.CLASS_NAME, 'vtex-product-summary-2-x-productBrand')
+                By.CLASS_NAME,
+                'vtex-product-summary-2-x-productBrand'
+            )
             precos = self.navegador.find_elements(
-                By.CLASS_NAME, 'telhanorte-telha-store-app-1-x-best-price-price-vitrini')
+                By.CLASS_NAME,
+                'telhanorte-telha-store-app-1-x-best-price-price-vitrini'
+            )
             url_produtos = self.navegador.find_elements(
-                By.CLASS_NAME, 'vtex-product-summary-2-x-clearLink'
+                By.CLASS_NAME,
+                'vtex-product-summary-2-x-clearLink'
             )
             url_imagens = self.navegador.find_elements(
-                By.XPATH, '//section/a/article/div[2]/img')
+                By.XPATH,
+                '//section/a/article/div[2]/img'
+            )
 
             for produto, preco, url_produto, url_imagem in zip(nome_produtos, precos, url_produtos, url_imagens):
                 yield {

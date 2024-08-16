@@ -169,7 +169,9 @@ class WebScrapingLeroyMerling(WebScrapingBase):
                     'css-1n5vdld-product-thumbnail__image'
                 )
                 url_produtos = self.navegador.find_elements(
-                    By.CLASS_NAME, 'css-1c4absn-new-product-thumb__title')
+                    By.CLASS_NAME,
+                    'css-1c4absn-new-product-thumb__title'
+                )
 
                 for nome_produto, codigo_produto, preco_produto, url_imagem, url_produto in zip(nome_produtos, codigos_produtos, precos_produto, url_imagens, url_produtos):
 
