@@ -18,10 +18,16 @@ from enums.enum_empresa import Empresa
 class WebScrapingTelhaNorte(WebScrapingBase):
 
     def __init__(self) -> None:
+
         self.__empresa = Empresa.TELHA_NORTE
         super().__init__(url='https://www.telhanorte.com.br/')
 
     def fazer_pesquisa_produto(self, termo_busca: str) -> None:
+        """Método para fazer pesquisa do produto
+
+        Args:
+            termo_busca (str): termo de busca Ex: Churrasqueira
+        """
         try:
             busca_produto = self.navegador.find_element(
                 By.CLASS_NAME, 'vtex-styleguide-9-x-input')
@@ -38,6 +44,11 @@ class WebScrapingTelhaNorte(WebScrapingBase):
             logger.error('Falha Geral')
 
     def executar_paginacao(self) -> Optional[bool]:
+        """Método para executar páginação
+
+        Returns:
+            Optional[bool]: none ou false
+        """
         while True:
             try:
                 self.navegador.find_element(
@@ -47,6 +58,11 @@ class WebScrapingTelhaNorte(WebScrapingBase):
                 break
 
     def coletar_dados_produtos(self) -> Generator[Dict[str, str | int | float], None, None]:
+        """Método para recuperar os dados de produtos
+
+        Yields:
+            Generator[Dict[str, str | int | float], None, None]: dados dos produtos
+        """
         try:
             self.executar_paginacao()
             nome_produtos = self.navegador.find_elements(
