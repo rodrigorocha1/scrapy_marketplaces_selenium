@@ -12,7 +12,7 @@ from selenium.webdriver.common.keys import Keys
 from src.services.webscarpingbase import WebScrapingBase
 from src.pacote_log.config__log import logger
 from typing import (Generator, Dict, Optional)
-from enums.enum_empresa import Empresa
+from src.enums.enum_empresa import Empresa
 from time import sleep
 
 

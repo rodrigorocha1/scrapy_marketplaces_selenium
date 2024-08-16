@@ -9,11 +9,9 @@ from typing import (
 class IWebScraping(ABC):
 
     @abstractmethod
-    def abrir_navegador(self, url: str):
+    def abrir_navegador(self):
         """Método para abrir o navegador e conectar na url
 
-        Args:
-            url (str): url do site
 
         """
 
