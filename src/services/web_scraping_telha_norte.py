@@ -36,16 +36,16 @@ class WebScrapingTelhaNorte(WebScrapingBase):
 
         except NoSuchElementException as msg:
             logger.error(f'Não encontrou elemento: {msg} ')
-            exit()
+            exit(1)
         except ElementNotInteractableException:
             logger.error('Elemento não pode ser interagido')
-            exit()
+            exit(1)
         except InvalidElementStateException:
             logger.error('Falha na operação de enviar teclas')
-            exit()
+            exit(1)
         except Exception:
             logger.error('Falha Geral')
-            exit()
+            exit(1)
 
     def executar_paginacao(self) -> Optional[bool]:
         """Método para executar páginação
@@ -53,14 +53,15 @@ class WebScrapingTelhaNorte(WebScrapingBase):
         Returns:
             Optional[bool]: none ou false
         """
-        while True:
+        paginacao = True
+        while paginacao:
             try:
-                self.navegador.find_element(
+                paginacao = self.navegador.find_element(
                     By.XPATH,
                     '/html/body/div[2]/div/div[1]/div/div[1]/div/div[4]/section/div[2]/div/div[3]/div/a/div'
                 ).click()
             except Exception as E:
-                break
+                paginacao = False
 
     def coletar_dados_produtos(self) -> Generator[Dict[str, str | int | float], None, None]:
         """Método para recuperar os dados de produtos
@@ -105,7 +106,7 @@ class WebScrapingTelhaNorte(WebScrapingBase):
                 }
         except NoSuchElementException as msg:
             logger.error(f'Não encontrou id: {msg} ')
-            exit()
+            exit(1)
         except Exception:
             logger.error('Falha Geral')
-            exit()
+            exit(1)
