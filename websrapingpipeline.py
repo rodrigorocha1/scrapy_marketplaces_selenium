@@ -4,13 +4,14 @@ from src.services.web_scraping_telha_norte import WebScrapingTelhaNorte
 from src.pacote_log.config__log import logger
 from src.infra.interface.iconexaodatabase import IconexaoDatabase
 from src.infra.conexao_banco_sqlite import ConexaoBancoSQLITE
+from src.enums.enum_empresa import Empresa
 
 
 class WebScrapingPipeline:
     def __init__(
             self,
             operacoes_banco: IconexaoDatabase,
-            opcao: int,
+            opcao: Empresa,
             preco_maior: float = None,
             preco_menor: float = None
     ) -> None:
@@ -22,10 +23,11 @@ class WebScrapingPipeline:
             preco_maior (float, optional): Preço maior para alguns serviços web scraping. Defaults to None.
             preco_menor (float, optional): Preço menor para alguns serviços. Defaults to None.
         """
-        self.__opcao = opcao
+
         self.__operacoes_banco = operacoes_banco
         self.__preco_maior = preco_maior
         self.__preco_menor = preco_menor
+        self.__opcao = opcao
         self.__web_scraping_service = self.selecionar_servico_web_scraping()
 
     def selecionar_servico_web_scraping(self) -> IWebScraping:
@@ -35,13 +37,13 @@ class WebScrapingPipeline:
             IWebScraping: Serviço web scraping
         """
         match self.__opcao:
-            case 1:
+            case Empresa.LEROY_MERLIN:
 
                 return WebScrapingLeroyMerling(
                     preco_menor=self.__preco_menor,
                     preco_maior=self.__preco_maior
                 )
-            case 2:
+            case Empresa.TELHA_NORTE:
 
                 return WebScrapingTelhaNorte()
 
@@ -63,7 +65,7 @@ class WebScrapingPipeline:
 
 if __name__ == '__main__':
     logger.info('Iniciando web Scraping')
-    for servico_web_scraping in [1, 2]:
+    for servico_web_scraping in [Empresa.LEROY_MERLIN.value, Empresa.TELHA_NORTE.value]:
         ws = WebScrapingPipeline(
             operacoes_banco=ConexaoBancoSQLITE(),
             preco_menor=100,
