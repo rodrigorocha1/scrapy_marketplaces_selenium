@@ -14,6 +14,7 @@ class IWebScraping(ABC):
 
 
         """
+        pass
 
     @abstractmethod
     def fazer_pesquisa_produto(self, termo_busca: str) -> None:
