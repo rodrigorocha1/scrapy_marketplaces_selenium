@@ -1,8 +1,7 @@
 from src.services.iwebscraping import IWebScraping
 from src.services.webscrapingleroymerlin import WebScrapingLeroyMerling
 from src.services.web_scraping_telha_norte import WebScrapingTelhaNorte
-from src.pacote_log.config__log import logger
-from time import sleep
+from src.pacote_log.config__log import configurar_logger
 from src.infra.interface.iconexaodatabase import IconexaoDatabase
 from src.infra.conexao_banco_sqlite import ConexaoBancoSQLITE
 
@@ -39,7 +38,7 @@ class WebScrapingPipeline:
         self.__web_scraping_service.fazer_pesquisa_produto(
             termo_busca='Churrasqueira'
         )
-        sleep(3)
+
         logger.info('Inserindo produtos no banco')
         for produto in self.__web_scraping_service.coletar_dados_produtos():
             self.__operacoes_banco.inserir_produtos(dados=produto)
@@ -48,11 +47,10 @@ class WebScrapingPipeline:
 
 logger.info('Iniciando web Scraping')
 for servico_web_scraping in [1, 2]:
-    print(servico_web_scraping)
     ws = WebScrapingPipeline(
         operacoes_banco=ConexaoBancoSQLITE(),
         preco_menor=100,
-        preco_maior=150,
+        preco_maior=120,
         opcao=servico_web_scraping
     )
     ws.rodar_web_scraping()
