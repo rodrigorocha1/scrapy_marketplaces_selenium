@@ -14,6 +14,14 @@ class WebScrapingPipeline:
             preco_maior: float = None,
             preco_menor: float = None
     ) -> None:
+        """Init da classe WebScrapingPipeline
+
+        Args:
+            operacoes_banco (IconexaoDatabase): Recebe um objeto banco
+            opcao (int): opção de seleção web scraping
+            preco_maior (float, optional): Preço maior para alguns serviços web scraping. Defaults to None.
+            preco_menor (float, optional): Preço menor para alguns serviços. Defaults to None.
+        """
         self.__opcao = opcao
         self.__operacoes_banco = operacoes_banco
         self.__preco_maior = preco_maior
@@ -21,6 +29,11 @@ class WebScrapingPipeline:
         self.__web_scraping_service = self.selecionar_servico_web_scraping()
 
     def selecionar_servico_web_scraping(self) -> IWebScraping:
+        """Seleciona a ordem de execução web scrapinf
+
+        Returns:
+            IWebScraping: Serviço web scraping
+        """
         match self.__opcao:
             case 1:
 
@@ -33,6 +46,8 @@ class WebScrapingPipeline:
                 return WebScrapingTelhaNorte()
 
     def rodar_web_scraping(self):
+        """Método para rodar o serviço web scraping
+        """
 
         self.__web_scraping_service.abrir_navegador()
         self.__web_scraping_service.fazer_pesquisa_produto(
@@ -45,13 +60,14 @@ class WebScrapingPipeline:
         self.__web_scraping_service.fechar_nagegador()
 
 
-logger.info('Iniciando web Scraping')
-for servico_web_scraping in [1, 2]:
-    ws = WebScrapingPipeline(
-        operacoes_banco=ConexaoBancoSQLITE(),
-        preco_menor=100,
-        preco_maior=120,
-        opcao=servico_web_scraping
-    )
-    ws.rodar_web_scraping()
-logger.info('Fim web Scraping')
+if __name__ == '__main__':
+    logger.info('Iniciando web Scraping')
+    for servico_web_scraping in [1, 2]:
+        ws = WebScrapingPipeline(
+            operacoes_banco=ConexaoBancoSQLITE(),
+            preco_menor=100,
+            preco_maior=120,
+            opcao=servico_web_scraping
+        )
+        ws.rodar_web_scraping()
+    logger.info('Fim web Scraping')
