@@ -7,6 +7,7 @@ from src.services.webscarpingbase import WebScrapingBase
 from src.pacote_log.config__log import logger
 from typing import (Generator, Dict, Optional)
 from enums.enum_empresa import Empresa
+from time import sleep
 
 
 class WebScrapingLeroyMerling(WebScrapingBase):
@@ -32,6 +33,12 @@ class WebScrapingLeroyMerling(WebScrapingBase):
             busca_produto.send_keys(termo_busca, Keys.ENTER)
         except NoSuchElementException as msg:
             logger.error(f'Não encontrou id: {msg} ')
+
+    def clicar_cookie(self):
+        WebDriverWait(self.navegador, 20).until(
+            EC.presence_of_element_located(
+                (By.ID,
+                 'onetrust-accept-btn-handler'))).click()
 
     def __esperar_elemento(self):
         """Espera a tag do css antes de fazer as pesquisas
@@ -60,19 +67,26 @@ class WebScrapingLeroyMerling(WebScrapingBase):
             By.XPATH,
             '//*[@id="mobile-filter-content"]/div/div/div[6]/div[2]/div/div[2]/div/input'
         )
-        preco_maximo.send_keys(self.__preco_maior)
-        self.navegador.find_element(
-            By.XPATH,
-            '//*[@id="mobile-filter-content"]/div/div/div[6]/div[2]/div/button'
-        ).click()
+        preco_maximo.send_keys(self.__preco_maior, Keys.ENTER)
 
-    def __executar_rolagem(self, chave: int):
+    def __executar_rolagem(self):
         """Executa a barra de rolagem
 
-        Args:
-            chave (int): número do loop
+
         """
-        self.navegador.execute_script(f'window.scroll(0, {chave * 90})')
+        for i in range(1, 60):
+            self.navegador.execute_script(f'window.scroll(1, {i * 60})')
+
+    def __aguardar_listagem_produtos(self):
+        WebDriverWait(self.navegador, 30).until(
+            EC.presence_of_element_located(
+                (
+                    By.CLASS_NAME,
+                    'new-product-thumb'
+                )
+            )
+        )
+        sleep(3)
 
     def coletar_dados_produtos(self) -> Generator[Dict[str, str | int | float], None, None]:
         """Método para retornar os dados de cada produto por vez
@@ -80,46 +94,80 @@ class WebScrapingLeroyMerling(WebScrapingBase):
         Yields:
             Generator[Dict[str, str | int | float], None, None]: Um gerador de produtos
         """
-        try:
-            self.__selecionar_faixa_preco()
-            lista_produtos = self.navegador.find_elements(
-                By.CLASS_NAME,
-                'new-product-thumb'
-            )
-            for chave, produto in enumerate(lista_produtos):
+        self.clicar_cookie()
+        self.__selecionar_faixa_preco()
+        paginacao = True
+        while paginacao:
+            try:
 
-                yield {
-                    'EMPRESA': self.__empresa.name,
-                    'CODIGO_EMPRESA':  self.__empresa.value,
-                    'NOME_PRODUTO': produto.find_element(
-                        By.CLASS_NAME,
-                        'css-1eaoahv-ellipsis'
-                    ).text,
-                    'CODIGO': int(produto.find_element(
-                        By.CLASS_NAME,
-                        'css-19qfvzb-new-product-thumb__product-code'
-                    ).text.replace('Cód. ', '')
-                    ),
-                    'PRECO': float(produto.find_element(
+                self.__aguardar_listagem_produtos()
+                self.__executar_rolagem()
+                lista_produtos = self.navegador.find_elements(
+                    By.CLASS_NAME,
+                    'new-product-thumb'
+                )
+                nome_produtos = self.navegador.find_elements(
+                    By.CLASS_NAME,
+                    'css-1eaoahv-ellipsis'
+                )
+                codigos_produtos = self.navegador.find_elements(
+                    By.CLASS_NAME,
+                    'css-19qfvzb-new-product-thumb__product-code'
+                )
+                precos_produto = self.navegador.find_elements(
+                    By.CLASS_NAME,
+                    'css-m39r81-price-tag__price'
+                )
+                url_imagens = self.navegador.finds_elements(
+                    By.CLASS_NAME(
                         By.CLASS_NAME,
                         'css-m39r81-price-tag__price'
-                    ).text.replace('R$ ', '').replace(',', '.').strip()),
-                    'URL_IMG':  produto.find_element(
-                        By.CLASS_NAME,
-                        'css-1n5vdld-product-thumbnail__image'
-                    ).get_attribute('src'),
-                    'URL_PRODUTO': produto.find_element(
-                        By.TAG_NAME,
-                        'a'
-                    ).get_attribute('href'),
-                    'DATA_EXTRACAO':  self._data_atual()
+                    )
+                )
+                url_produtos = self.navegador.find_elements()
 
-                }
-                self.__executar_rolagem(chave=chave)
-                if not self.executar_paginacao():
-                    break
-        except NoSuchElementException as msg:
-            logger.error(f'Não encontrou id: {msg} ')
+                for chave, produto in enumerate(lista_produtos):
+                    try:
+                        yield {
+                            'EMPRESA': self.__empresa.name,
+                            'CODIGO_EMPRESA':  self.__empresa.value,
+                            'NOME_PRODUTO': produto.find_element(
+                                By.CLASS_NAME,
+                                'css-1eaoahv-ellipsis'
+                            ).text,
+                            'CODIGO': int(produto.find_element(
+                                By.CLASS_NAME,
+                                'css-19qfvzb-new-product-thumb__product-code'
+                            ).text.replace('Cód. ', '')
+                            ),
+                            'PRECO': float(produto.find_element(
+                                By.CLASS_NAME,
+                                'css-m39r81-price-tag__price'
+                            ).text.replace('R$ ', '').replace('.', '').replace(',', '.').strip()),
+                            'URL_IMG':  produto.find_element(
+                                By.CLASS_NAME,
+                                'css-1n5vdld-product-thumbnail__image'
+                            ).get_attribute('src'),
+                            'URL_PRODUTO': produto.find_element(
+                                By.TAG_NAME,
+                                'a'
+                            ).get_attribute('href'),
+                            'DATA_EXTRACAO':  self._data_atual()
+
+                        }
+                        paginacao = self.executar_paginacao()
+
+                    except Exception:
+                        print(produto.find_element(
+                            By.CLASS_NAME,
+                            'css-1eaoahv-ellipsis'
+                        ).text, produto.find_element(
+                            By.CLASS_NAME,
+                            'css-m39r81-price-tag__price'
+                        ).text)
+
+            except NoSuchElementException as msg:
+                logger.error(f'Não encontrou id: {msg} ')
 
     def executar_paginacao(self) -> Optional[bool]:
         """Execcuta a páginação
