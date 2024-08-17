@@ -1,3 +1,5 @@
+## Projeto: Web Scaping de sites 1: Leroy Merling e Telha norte
+
 ## 1-Ideia do Projeto
 
 A ideia do projeto é fazer a extração dos dados dos produtos dos sites Leroy Merling e Telha norte e gravar dados no e-mail.
